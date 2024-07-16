@@ -5,7 +5,7 @@ Once your environment variables are setup and your server has the right resource
 
 The demo will run for both self-managed OnPrem 7.6+ Couchbase deployments and also clould based 7.6+ Capella deployments.
 
-If you don't have the time to run the demo you can just download and watch the 4 minute video: [easy-vector-langchain-demo_1920x1080.mp4](https://github.com/jon-strabala/easy-vector-langchain-demo/blob/main/easy-vector-langchain-demo_1920x1080.mp4) 
+If you don't have the time to run the demo you can just download and watch the 4 minute video: [easy-semantic-cache-demo_1920x1080.mp4](https://github.com/jon-strabala/easy-semantic-cache-demo/blob/main/easy-semantic-cache-demo_1920x1080.mp4) 
 
 ### Prerequisites 
 
@@ -39,11 +39,13 @@ Quick tips on Python virtual environments (please folow this unless you are an e
 
 ### How does this demo work?
 
-It loads ten (10) simple words into a Couchbase collection.
+This repository contains two Python programs: `simple_memory_cache_test.py` and `simple_couchbase_semantic_cache_test.py`.
 
-It executes three (3) canned queries against the Couchbase collection containing your vector embeddings.
+The first python program `simple_memory_cache_test.py` demonstrates a basic in-memory caching mechanism for questions and answers. Before querying the Language Learning Model (LLM), it checks the cache for an existing answer. If the question has already been asked and is present in the cache, the program retrieves the answer directly, bypassing the LLM call. This exact key-value cache requires the question to be identical to the one stored to avoid making a call to the LLM.
 
-For each question, you will three ordered answers from your vector search
+The second python program `simple_couchbase_semantic_cache_test.py`  enhances the caching mechanism by using Couchbase to store questions and answers. Similar to the in-memory cache, it checks the Couchbase cache before querying the LLM. However, this program also supports semantic similarity. If a semantically similar question is found in the cache, it retrieves the corresponding answer, avoiding the LLM call. This helps to reduce the overhead of repeated queries to the LLM by leveraging Couchbase's semantic caching capabilities.
+
+In both programs, a remote embedding model is used to generate similarity vectors, which are stored in the Couchbase database. This ensures efficient and accurate retrieval of semantically similar questions and answers.
 
 ### How to Run
 
@@ -86,7 +88,7 @@ For each question, you will three ordered answers from your vector search
 
 - If needed set the executable bits on various files via chmod for the following:
 
-  `chmod +x basic_couchbase_langchain.py  check_couchbase.sh  check_openai.py  setup.py`
+  `chmod +x simple_memory_cache_test.py simple_couchbase_semantic_cache_test.py check_couchbase.sh  check_openai.py  setup.py`
 
 - Verify connectivity and authentication to your Couchbase server
 
@@ -100,17 +102,17 @@ For each question, you will three ordered answers from your vector search
 
   `./setup.py`
 
-- Run the first application a simple in memory key value store (this is exact search) you canskp this step if you want.
+- Optional, run the first application a simple in memory key value store (this is exact search) you can skip this step if you want.
 
   `./simple_memory_cache_test.py`
 
-- Look at the code above to see how it works.
+- Look at the source code above to see how it works.
 
-- Run the second application a simple RAG application that uses COuchbase Vector search and a Semantic Cache (this can avoid LLM calls for similar answers)
+- Run the second application a simple RAG application that uses Couchbase Vector search and a Semantic Cache (this shows how you can avoid LLM calls for similar questions to speed up your ChatBots)
 
   `./simple_couchbase_semantic_cache_test.py`
 
-- Look at the code above to see how it works.
+- Look at the source code above to see how it works.
 
 - Finished
 
