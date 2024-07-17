@@ -58,7 +58,8 @@ def seed_cache(cache, prompt, answer):
     )
 
 pa = PasswordAuthenticator(CB_USERNAME, CB_PASSWORD)
-cluster = Cluster("couchbase://" + CB_HOSTNAME, ClusterOptions(pa))
+# cluster = Cluster("couchbase://" + CB_HOSTNAME, ClusterOptions(pa))
+cluster = Cluster("couchbases://" + CB_HOSTNAME + "/?ssl=no_verify", ClusterOptions(pa))
 cluster.wait_until_ready(timedelta(seconds=5))
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
