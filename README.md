@@ -39,11 +39,13 @@ Quick tips on Python virtual environments (please folow this unless you are an e
 
 ### How does this demo work?
 
+How Does This Demo Work?
+
 This repository contains two Python programs: `simple_memory_cache_test.py` and `simple_couchbase_semantic_cache_test.py`.
 
-The first python program `simple_memory_cache_test.py` demonstrates a basic in-memory caching mechanism for questions and answers. Before querying the Language Learning Model (LLM), it checks the cache for an existing answer. If the question has already been asked and is present in the cache, the program retrieves the answer directly, bypassing the LLM call. This exact key-value cache requires the question to be identical to the one stored to avoid making a call to the LLM.
+The first program, `simple_memory_cache_test.py`, demonstrates a basic in-memory caching mechanism for questions and answers. Before querying the Language Learning Model (LLM), it checks the cache for an existing answer. If the question has already been asked and is present in the cache, the program retrieves the answer directly, bypassing the LLM call. This exact key-value cache requires the question to be identical to the one stored to avoid making a call to the LLM.
 
-The second python program `simple_couchbase_semantic_cache_test.py`  enhances the caching mechanism by using Couchbase to store questions and answers. Similar to the in-memory cache, it checks the Couchbase cache before querying the LLM. However, this program also supports semantic similarity. If a semantically similar question is found in the cache, it retrieves the corresponding answer, avoiding the LLM call. This helps to reduce the overhead of repeated queries to the LLM by leveraging Couchbase's semantic caching capabilities.
+The second program, `simple_couchbase_semantic_cache_test.py`, enhances the caching mechanism by using Couchbase to store questions and answers. Similar to the in-memory cache, it checks the Couchbase cache before querying the LLM. However, this program also supports semantic similarity. If a semantically similar question is found in the cache, it retrieves the corresponding answer, avoiding the LLM call. This reduces the overhead of repeated queries to the LLM by leveraging Couchbase's semantic caching capabilities. It also demonstrates how you can seed "blessed" questions and answers into the semantic cache.
 
 In both programs, a remote embedding model is used to generate similarity vectors, which are stored in the Couchbase database. This ensures efficient and accurate retrieval of semantically similar questions and answers.
 
