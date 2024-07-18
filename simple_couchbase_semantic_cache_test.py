@@ -29,17 +29,12 @@ CB_SCOPE = os.getenv("CB_SCOPE")
 CB_COLLECTION = os.getenv("CB_COLLECTION")
 CB_SEARCHINDEX = os.getenv("CB_SEARCHINDEX")
 
-def get_llm_string():
-    sorted_items = sorted([(k,v) for k, v in llm.dict().items()])
-    # add missing field to the key
-    if ('stop', None) not in sorted_items:
-        sorted_items.append(('stop', None))
-    sorted_items = sorted(sorted_items)  # Ensure the list is sorted again after insertion
-    rval = str(sorted_items)
-    # print(f"set the llm_string: {rval}")
-    return rval
+def seed_cache(cache, prompt, answer):
 
-def seed_cache(cache, llm_string, prompt, answer):
+    params = llm.dict()
+    params["stop"] = None
+    llm_string = str(sorted([(k,v) for k, v in params.items()]))
+
     cache.update(
         prompt,
         llm_string,
@@ -70,8 +65,6 @@ if not openai_api_key:
 
 client = OpenAI(api_key=openai_api_key)
 
-# don't we need a key in an actual python application?
-# embeddings = OpenAIEmbeddings()
 embeddings = OpenAIEmbeddings(openai_api_key=openai_api_key)
 llm = OpenAI(model_name="gpt-3.5-turbo-instruct", n=2, best_of=2)
 
@@ -85,7 +78,7 @@ cache = CouchbaseSemanticCache(
     score_threshold=0.8,
 )
 
-cache.clear()
+cache.clear() # curious what this does under the hood WRT couchbase
 set_llm_cache(cache)
 
 # Array of prompts and answers
@@ -94,16 +87,13 @@ prompts_and_answers = [
     ("How much is to call mars?", "Calling Mars by radio can costs $1,000 USD per minute at NASA."),
     ("Why is the moon made of cheese?", "Because if it was made of water it would evaporate into space."),
     ("Who is the 2024 Republican VP Pick in the U.S.", "JD Vance."),
-    ("Who is the 2024 Democratic VP Pick in the U.S.", "Kamala Harris.")
+    ("Who is the 2024 Democratic VP Pick in the U.S.", "Kamala Harris."),
+    ("What was the S&P 500 at on 2024-07-18", "It opened at $5,608.56 and closed at $5,538.18 (with a High of $5,614.05 and a Low of $5,537.13)")
 ]
-
-
-# needed to seed cache values this is the key
-llm_string = get_llm_string()
 
 # Loop through the array and seed the cache
 for prompt, answer in prompts_and_answers:
-    seed_cache(cache, llm_string, prompt, answer)
+    seed_cache(cache, prompt, answer)
 
 if False:
     for _ in range(5):
