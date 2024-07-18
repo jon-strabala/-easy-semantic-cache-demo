@@ -29,19 +29,20 @@ CB_SCOPE = os.getenv("CB_SCOPE")
 CB_COLLECTION = os.getenv("CB_COLLECTION")
 CB_SEARCHINDEX = os.getenv("CB_SEARCHINDEX")
 
-def seed_cache(cache, prompt, answer):
-    # need a _get_llm_string()
-    # the below is close
-    # print("1", llm._llm_type)
-    # print("2", llm._identifying_params)
+def get_llm_string():
+    sorted_items = sorted([(k,v) for k, v in llm.dict().items()])
+    # add missing field to the key
+    if ('stop', None) not in sorted_items:
+        sorted_items.append(('stop', None))
+    sorted_items = sorted(sorted_items)  # Ensure the list is sorted again after insertion
+    rval = str(sorted_items)
+    # print(f"set the llm_string: {rval}")
+    return rval
+
+def seed_cache(cache, llm_string, prompt, answer):
     cache.update(
-        # for now we have to 'poke in the exact embedding model to seed the cache
-        # for the langchain implementation, a later langchain_couchbase.cache
-        # should automate this.
         prompt,
-        "[('_type', 'openai'), ('best_of', 2), ('frequency_penalty', 0), ('logit_bias', {}), "
-        "('max_tokens', 256), ('model_name', 'gpt-3.5-turbo-instruct'), ('n', 2), ('presence_penalty', 0), "
-        "('stop', None), ('temperature', 0.7), ('top_p', 1)]",
+        llm_string,
         [{
             "lc": 1,
             "type": "constructor",
@@ -96,9 +97,13 @@ prompts_and_answers = [
     ("Who is the 2024 Democratic VP Pick in the U.S.", "Kamala Harris.")
 ]
 
+
+# needed to seed cache values this is the key
+llm_string = get_llm_string()
+
 # Loop through the array and seed the cache
 for prompt, answer in prompts_and_answers:
-    seed_cache(cache, prompt, answer)
+    seed_cache(cache, llm_string, prompt, answer)
 
 if False:
     for _ in range(5):
